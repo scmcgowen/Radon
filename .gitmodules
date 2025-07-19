@@ -1,3 +1,3 @@
 [submodule "Krypton"]
 	path = Krypton
-	url = https://github.com/Allymonies/Krypton
+	url = git@github.com:scmcgowen/Krypton.git
