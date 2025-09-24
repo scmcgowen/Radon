@@ -510,16 +510,27 @@ function ShopState:runShop()
             sleep(blinkFrequency)
         end
     end, function()
-        local x, y, z
+        local x, y, z = self.config.shopSync.location.x, self.config.shopSync.location.y, self.config.shopSync.location.z
+        local gpsX, gpsY, gpsZ
+
         local lastShopSync = os.epoch("utc")
         sleep(math.random() * 15 + 15)
         os.queueEvent("radon_shopsync_update")
         while self.running do
             os.pullEvent("radon_shopsync_update")
             if self.config.shopSync and self.config.shopSync.enabled and self.peripherals.shopSyncModem then
-                if not x or not y or not z then
-                    x, y, z = gps.locate(5)
+                if ((not x or not y or not z) or (not self.config.shopSync.location.disableGPSPosVerification)) and (not gpsX or not gpsY or not gpsZ) then
+                    gpsX, gpsY, gpsZ = gps.locate(5)
                 end
+
+                if (not x or not y or not z) and (gpsX and gpsY and gpsZ) then
+                    x, y, z = gpsX, gpsY, gpsZ
+                end
+
+                if not self.config.shopSync.location.disableGPSPosVerification and (gpsX and gpsY and gpsZ and x and y and z and (gpsX ~= x or gpsY ~= y or gpsZ ~= z)) then
+                    print(string.format("Shopsync: Warning: GPS position doesn't match configured position, using configured position anyways (conf: %d,%d,%d; GPS: %d,%d,%d)", x, y, z, gpsX, gpsY, gpsZ))
+                end
+
                 local now = os.epoch("utc")
                 if (now - lastShopSync) < (shopSyncFrequency * 1000) then
                     local timeToSleep = shopSyncFrequency - ((now - lastShopSync) / 1000)
