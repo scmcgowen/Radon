@@ -235,7 +235,8 @@ return {
         {
             id = "krist", -- if not krist or tenebra, must supply endpoint
             -- node = "https://krist.dev/"
-            name = nil, -- Your krist name, usually ending in .kst
+            host = nil, -- Your krist address (only if using nameless shop, example: 'k123456789')
+            name = nil, -- Your krist name, usually ending in .kst (only if using krist name)
             pkey = nil, -- Your private key, or password for kristwallet
             pkeyFormat = "raw", -- Currently must be 'raw' or 'kristwallet'
             -- You can get your raw pkey from kristweb or using https://pkey.its-em.ma/
@@ -268,6 +269,10 @@ return {
         description = "A radon Shop",
         owner = nil,
         location = {
+            x = nil, -- Coordinates are determined using GPS if none are set, but I'd recommend setting them
+            y = nil, -- Make sure to use the exact position of the turtle/computer
+            z = nil,
+            disableGPSPosVerification = false, -- Complains in logs if the set position and GPS position doesn't match, this prevents people from setting the incorrect coordinates if GPS is available
             description = nil,
             dimension = "overworld"
         }

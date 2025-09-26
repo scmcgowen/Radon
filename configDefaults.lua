@@ -186,6 +186,10 @@ return {
         description = "A radon Shop",
         owner = nil,
         location = {
+            x = nil, -- Coordinates are determined using GPS if none are set, but I'd recommend setting them
+            y = nil, -- Make sure to use the exact position of the turtle/computer
+            z = nil,
+            disableGPSPosVerification = false, -- Complains in logs if the set position and GPS position doesn't match, this prevents people from setting the incorrect coordinates if GPS is available
             description = nil,
             dimension = "overworld"
         }
