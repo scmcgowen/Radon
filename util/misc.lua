@@ -37,7 +37,26 @@ function bakeToCanvas(rootComponent)
     return canvas
 end
 
+--Deeply copies a table, not taking into account __opaque and __nocopy
+local function plainDeepCopy(t)
+    if type(t) ~= "table" then
+        return t
+    end
+
+    local copy = {}
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            copy[k] = plainDeepCopy(v)
+        else
+            copy[k] = v
+        end
+    end
+    return copy
+end
+
+
 return {
     tableSize = tableSize,
     bakeToCanvas = bakeToCanvas,
+    plainDeepCopy = plainDeepCopy
 }

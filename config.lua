@@ -233,6 +233,17 @@ return {
     },
     currencies = {
         {
+            id = "kromer", -- if not krist or tenebra, must supply endpoint
+            -- node = "https://kromer.reconnected.cc/api/krist/",
+            host = nil, -- Your krist address (only if using nameless shop, example: 'k123456789')
+            name = nil, -- Your krist name, usually ending in .kst (only if using krist name)
+            pkey = nil, -- Your private key, or password for kristwallet
+            pkeyFormat = "raw", -- Currently must be 'raw' or 'kristwallet'
+            -- You can get your raw pkey from kristweb or using https://pkey.its-em.ma/
+            value = 1.0, -- Default scaling on item prices, can be overridden on a per-item basis
+            -- minimumIncrement = 0.01, -- Minimum increment for this currency, used to determine the minimum refundabe amount (this is automatically determined by id here)
+        },
+        --[[{
             id = "krist", -- if not krist or tenebra, must supply endpoint
             -- node = "https://krist.dev/"
             host = nil, -- Your krist address (only if using nameless shop, example: 'k123456789')
@@ -240,8 +251,9 @@ return {
             pkey = nil, -- Your private key, or password for kristwallet
             pkeyFormat = "raw", -- Currently must be 'raw' or 'kristwallet'
             -- You can get your raw pkey from kristweb or using https://pkey.its-em.ma/
-            value = 1.0 -- Default scaling on item prices, can be overridden on a per-item basis
-        },
+            value = 1.0, -- Default scaling on item prices, can be overridden on a per-item basis
+            -- minimumIncrement = 1, -- Minimum increment for this currency, used to determine the minimum refundabe amount (this is automatically determined by id here)
+        },]]
         --[[{
             id = "tenebra", -- if not krist or tenebra, must supply endpoint
             -- node = "https://krist.dev/"
@@ -250,7 +262,8 @@ return {
             pkey = nil, -- Your private key, or password for kristwallet
             pkeyFormat = "raw", -- Currently must be 'raw', kwallet support is planned
             -- You can get your raw pkey from kristweb or using https://pkey.its-em.ma/
-            value = 0.1 -- Default scaling on item prices, can be overridden on a per-item basis
+            value = 0.1, -- Default scaling on item prices, can be overridden on a per-item basis
+            -- minimumIncrement = 1, -- Minimum increment for this currency, used to determine the minimum refundabe amount (this is automatically determined by id here)
         },--]]
         --[[{
             id = "carrotpay", -- defaults to krist endpoint + carrotpay.herrkatze.com for name resolution
@@ -260,7 +273,8 @@ return {
             pkey = nil, -- Your private key, or password for kristwallet
             pkeyFormat = "raw", -- Currently must be 'raw', kwallet support is planned
             -- You can get your raw pkey from kristweb or using https://pkey.its-em.ma/
-            value = 0.1 -- Default scaling on item prices, can be overridden on a per-item basis
+            value = 0.1, -- Default scaling on item prices, can be overridden on a per-item basis
+            -- minimumIncrement = 1, -- Minimum increment for this currency, used to determine the minimum refundabe amount (this is automatically determined by id here)
         },--]]
     },
     shopSync = {
