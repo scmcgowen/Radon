@@ -25,6 +25,7 @@ end
 
 --- Imports
 local _ = require("util.score")
+local misc = require("util.misc")
 local sound = require("util.sound")
 local eventHook = require("util.eventHook")
 
@@ -57,8 +58,8 @@ local defaultLayout = require("DefaultLayout")
 local loadRIF = require("modules.rif")
 
 local configDefaults = require("configDefaults")
-local config = require("config")
-local products = require("products")
+local config = misc.plainDeepCopy(require("config"))
+local products = misc.plainDeepCopy(require("products"))
 local eventHooks = {}
 if fs.exists(fs.combine(fs.getDir(shell.getRunningProgram()), "eventHooks.lua")) then
     eventHooks = require("eventHooks")
@@ -66,6 +67,11 @@ end
 --- End Imports
 
 configHelpers.loadDefaults(config, configDefaults)
+
+-- these are for the GUI config editor, so that it doesnt save runtime stuff
+local editConfig = misc.plainDeepCopy(config)
+local editProducts = misc.plainDeepCopy(products)
+
 local configErrors = ConfigValidator.validateConfig(config)
 local productsErrors = ConfigValidator.validateProducts(products)
 
@@ -93,6 +99,8 @@ local configState = {
     config = config,
     products = products,
     eventHooks = eventHooks,
+    editConfig = editConfig,
+    editProducts = editProducts,
 }
 
 local Main = Solyd.wrapComponent("Main", function(props)
@@ -273,15 +281,17 @@ local Terminal = Solyd.wrapComponent("Terminal", function(props)
             width = bodyWidth,
             height = bodyHeight,
             config = props.configState.config,
+            editConfig = props.configState.editConfig,
             schema = schemas.configSchema,
             errors = props.terminalState.configErrors,
             errorPrefix = "config",
             terminalState = props.terminalState,
             theme = theme.colors.configEditor,
-            onSave = function(newConfig)
+            onSave = function(newConfig, newEditConfig)
                 props.shopState.oldConfig = props.configState.config
                 props.shopState.config = newConfig
                 props.configState.config = newConfig
+                props.configState.editConfig = newEditConfig
                 props.terminalState.configErrors = ConfigValidator.validateConfig(newConfig)
                 if (not props.terminalState.configErrors or #props.terminalState.configErrors == 0) and (not props.terminalState.productsErrors or #props.terminalState.productsErrors == 0) then
                     newConfig.ready = true
@@ -289,12 +299,13 @@ local Terminal = Solyd.wrapComponent("Terminal", function(props)
                 configHelpers.getPeripherals(newConfig, peripherals)
                 -- TODO: Detect if we actually need to update currencies
                 props.shopState.changedCurrencies = true
+                local serialized = textutils.serialize(newEditConfig)
                 local f = fs.open("config.lua", "w")
-                f.write("return " .. textutils.serialize(newConfig))
+                f.write("return " .. serialized)
                 f.close()
                 print("Configs updated!")
                 if props.configState.eventHooks and props.configState.eventHooks.configSaved then
-                    props.configState.eventHooks.configSaved(newConfig)
+                    props.configState.eventHooks.configSaved(newEditConfig)
                 end
             end
         })
@@ -312,25 +323,28 @@ local Terminal = Solyd.wrapComponent("Terminal", function(props)
             width = bodyWidth,
             height = bodyHeight,
             config = props.shopState.products,
+            editConfig = props.configState.editProducts,
             schema = schemas.productsSchema,
             errors = props.terminalState.productsErrors,
             errorPrefix = "products",
             terminalState = props.terminalState,
             theme = theme.colors.productsEditor,
-            onSave = function(newConfig)
+            onSave = function(newConfig, newEditConfig)
                 props.shopState.products = newConfig
                 props.configState.products = newConfig
+                props.configState.editProducts = newEditConfig
                 props.terminalState.productsErrors = ConfigValidator.validateProducts(products)
                 if (not props.terminalState.configErrors or #props.terminalState.configErrors == 0) and (not props.terminalState.productsErrors or #props.terminalState.productsErrors == 0) then
                     props.configState.config.ready = true
                 end
                 ScanInventory.clearNbtCache()
+                local serialized = textutils.serialize(newEditConfig)
                 local f = fs.open("products.lua", "w")
-                f.write("return " .. textutils.serialize(newConfig))
+                f.write("return " .. serialized)
                 f.close()
                 print("Products updated!")
                 if props.configState.eventHooks and props.configState.eventHooks.productsSaved then
-                    props.configState.eventHooks.productsSaved(newConfig)
+                    props.configState.eventHooks.productsSaved(newEditConfig)
                 end
             end
         })

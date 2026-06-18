@@ -660,13 +660,14 @@ return Solyd.wrapComponent("ConfigEditor", function(props)
             borderColor = theme.modalBorderColor,
             onConfirm = function()
                 local newConfig = configHelpers.getNewConfig(props.config, configDiffs, arrayAdds, arrayRemoves)
+                local newEditConfig = configHelpers.getNewConfig(props.editConfig, configDiffs, arrayAdds, arrayRemoves)
                 setSaveModalOpen(false)
                 setArrayAdds({})
                 setArrayRemoves({})
                 setConfigDiffs({})
                 setUpdates(updates + 1)
                 if props.onSave then
-                    props.onSave(newConfig)
+                    props.onSave(newConfig, newEditConfig)
                 end
             end,
             onCancel = function()

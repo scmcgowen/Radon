@@ -229,7 +229,10 @@ function ShopState:handlePurchase(transaction, meta, sentMetaname, transactionCu
         return
     end
 
-    local refundAmount = math.floor(transaction.value - (available * productPrice))
+    local currencyMinimumIncrement = transactionCurrency.minimumIncrement or 1
+    local refundAmountRaw = transaction.value - (available * productPrice)
+    local refundAmount = math.floor(refundAmountRaw / currencyMinimumIncrement) * currencyMinimumIncrement
+
     local allowPurchase = true
     local err
     local errMessage
@@ -323,11 +326,18 @@ function ShopState:setupKrypton()
             currency.name = nil
         end
         local node = currency.node
-        if not node and (currency.id == "krist" or currency.id == "carrotpay") then
-            node = "https://krist.dev/"
-        elseif not node and currency.id == "tenebra" then
-            node = "https://tenebra.lil.gay/"
+
+        if currency.id == "krist" or currency.id == "carrotpay" then
+            node = node or "https://krist.dev/"
+            currency.minimumIncrement = currency.minimumIncrement or 1
+        elseif currency.id == "tenebra" then
+            node = node or "https://tenebra.lil.gay/"
+            currency.minimumIncrement = currency.minimumIncrement or 1
+        elseif currency.id == "kromer" then
+            node = node or "https://kromer.reconnected.cc/api/krist/"
+            currency.minimumIncrement = currency.minimumIncrement or 0.01
         end
+        
         currency.krypton = Krypton.new({
             privateKey = currency.pkey,
             node = node,
