@@ -219,7 +219,7 @@ local Terminal = Solyd.wrapComponent("Terminal", function(props)
     local theme = props.configState.config.terminalTheme
 
     local flatCanvas = {}
-    local versionString = "Radon " .. version
+    local versionString = version
     local terminalCatagories = { "logs", "config", "products" }
     local bodyHeight = math.floor(terminal.bgCanvas.height / 3) - 1
     local bodyWidth = math.floor(terminal.bgCanvas.width / 2)
